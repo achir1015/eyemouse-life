@@ -234,7 +234,7 @@ func _act(a: String) -> void:
 		await _wait_voice(0.0)
 	elif a == "body_demo":
 		var bp: BodyPage = main.page("body")
-		var target := bp.cam.unproject_position(Vector3(0.2, 1.405, 0.1))
+		var target := bp.cam.unproject_position(bp.body.world_pos(Vector3(0.2, 1.405, 0.1)))
 		var vr := bp.view.get_global_rect()
 		await _move_to(vr.position + target / Vector2(bp.vp.size) * vr.size)
 		await _sleep(App.dwell_s() + 0.5)

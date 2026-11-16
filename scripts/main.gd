@@ -850,7 +850,7 @@ func _selftest() -> void:
 	show_page("body")
 	await get_tree().create_timer(0.5).timeout
 	var bp: BodyPage = page("body")
-	var target := bp.cam.unproject_position(Vector3(0.2, 1.405, 0.1))
+	var target := bp.cam.unproject_position(bp.body.world_pos(Vector3(0.2, 1.405, 0.1)))
 	var vr := bp.view.get_global_rect()
 	Gaze.bot_point = vr.position + target / Vector2(bp.vp.size) * vr.size
 	await get_tree().create_timer(App.dwell_s() + 0.7).timeout

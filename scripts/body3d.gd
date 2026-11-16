@@ -14,20 +14,29 @@ var _yaw := 0.0
 var _t := 0.0
 var skin := Color("#F2C9A8")
 var _mat_cache := {}
-var root: Node3D
+var root: Node3D                # 轉身用
+var wide: Node3D                # 人體外形（橫向加寬）
+const WIDTH := 1.2              # 正面、背面都加寬 20%
 
 
 func _ready() -> void:
 	root = Node3D.new()
 	add_child(root)
+	wide = Node3D.new()
+	wide.scale = Vector3(WIDTH, 1, 1)
+	root.add_child(wide)
 	_build()
 
 
 func _base(id: String) -> Color:
 	if id.begins_with("eye"):
-		return Color("#4A3A30")
+		return Color("#FFFFFF")          # 眼白（眼珠另外畫）
 	if id == "mouth":
-		return Color("#C9776B")
+		return Color("#C2524A")          # 嘴唇
+	if id.begins_with("ear"):
+		return Color("#E9B18D")
+	if id == "nose":
+		return Color("#ECBA96")
 	return skin
 
 
@@ -46,7 +55,7 @@ func _add(shape: String, front: String, back: String, pos: Vector3, dims: Vector
 	var body := StaticBody3D.new()
 	body.position = pos
 	body.rotation = rot
-	root.add_child(body)
+	wide.add_child(body)
 	var mi := MeshInstance3D.new()
 	var col := CollisionShape3D.new()
 	match shape:
@@ -94,9 +103,16 @@ func _build() -> void:
 	for sx in [-1, 1]:
 		var side := "_l" if sx > 0 else "_r"
 		_add("sphere", "ear" + side, "ear" + side, Vector3(sx * 0.125, 1.62, -0.005), Vector3(0.04, 0.075, 0.05))
-		_add("sphere", "eye" + side, "back_head", Vector3(sx * 0.048, 1.645, 0.108), Vector3(0.05, 0.034, 0.04))
-	_add("sphere", "nose", "back_head", Vector3(0, 1.605, 0.125), Vector3(0.035, 0.05, 0.045))
-	_add("sphere", "mouth", "back_head", Vector3(0, 1.558, 0.11), Vector3(0.065, 0.028, 0.035))
+		_add("sphere", "eye" + side, "back_head", Vector3(sx * 0.048, 1.645, 0.11), Vector3(0.056, 0.04, 0.04))
+		# 五官細節（只有外觀，不影響選取）：眼珠、瞳孔、反光、眉毛、鼻孔
+		_deco(Vector3(sx * 0.048, 1.644, 0.127), Vector3(0.027, 0.029, 0.01), Color("#3A2618"))
+		_deco(Vector3(sx * 0.048, 1.644, 0.1315), Vector3(0.012, 0.013, 0.005), Color("#0B0705"))
+		_deco(Vector3(sx * 0.048 - 0.006, 1.651, 0.1335), Vector3(0.007, 0.007, 0.004), Color.WHITE, true)
+		_deco(Vector3(sx * 0.05, 1.677, 0.108), Vector3(0.064, 0.011, 0.014), Color("#4A3226"), false, sx * -0.12)
+		_deco(Vector3(sx * 0.011, 1.582, 0.144), Vector3(0.011, 0.007, 0.006), Color("#7A4A3A"))
+	_add("sphere", "nose", "back_head", Vector3(0, 1.603, 0.127), Vector3(0.042, 0.062, 0.052))
+	_add("sphere", "mouth", "back_head", Vector3(0, 1.556, 0.112), Vector3(0.078, 0.034, 0.042))
+	_deco(Vector3(0, 1.556, 0.1325), Vector3(0.062, 0.006, 0.004), Color("#6E2A28"))
 	_add("capsule", "neck", "nape", Vector3(0, 1.47, 0), Vector3(0.055, 0.14, 0))
 	# 軀幹
 	_add("capsule", "chest", "upper_back", Vector3(0, 1.28, 0), Vector3(0.155, 0.38, 0.72), Vector3(0, 0, PI / 2), {"sx": 1.0})
@@ -114,6 +130,27 @@ func _build() -> void:
 		_add("capsule", "foot" + side, "foot" + side, Vector3(sx * 0.095, 0.035, 0.04), Vector3(0.04, 0.2, 0), Vector3(PI / 2, 0, 0))
 
 
+## 只有外觀的小零件（五官細節），沒有碰撞體
+func _deco(pos: Vector3, dims: Vector3, col: Color, glossy := false, roll := 0.0) -> void:
+	var mi := MeshInstance3D.new()
+	var sm := SphereMesh.new()
+	sm.radius = 0.5
+	sm.height = 1.0
+	sm.radial_segments = 24
+	sm.rings = 12
+	mi.mesh = sm
+	mi.position = pos
+	mi.rotation.z = roll
+	mi.scale = dims
+	var m := StandardMaterial3D.new()
+	m.albedo_color = col
+	m.roughness = 0.2 if glossy else 0.6
+	if glossy:
+		m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mi.material_override = m
+	wide.add_child(mi)
+
+
 ## 視線打到的部位 id（camera 的光線）
 func pick(cam: Camera3D, vp_pos: Vector2) -> String:
 	var from := cam.project_ray_origin(vp_pos)
@@ -123,10 +160,15 @@ func pick(cam: Camera3D, vp_pos: Vector2) -> String:
 	if hit.is_empty() or not parts.has(hit.collider):
 		return ""
 	var cfg: Dictionary = parts[hit.collider]
-	var local: Vector3 = root.global_transform.affine_inverse() * (hit.position as Vector3)
+	var local: Vector3 = wide.global_transform.affine_inverse() * (hit.position as Vector3)
 	if cfg.has("top") and local.y > float(cfg.top_y):
 		return str(cfg.top)
 	return str(cfg.front) if local.z >= 0.0 else str(cfg.back)
+
+
+## 模型座標（加寬前）→ 世界座標，給示範游標與測試用
+func world_pos(p: Vector3) -> Vector3:
+	return wide.global_transform * p
 
 
 func set_back(v: bool) -> void:

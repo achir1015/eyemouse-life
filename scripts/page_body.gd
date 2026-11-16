@@ -11,6 +11,8 @@ var body: Body3D
 var feel_keys: Array = []
 var act_keys: Array = []
 var k_turn: GazeKey
+var k_front: GazeKey
+var k_back: GazeKey
 var k_whole: GazeKey
 var lbl_part: Label
 var lbl_l: Label
@@ -78,6 +80,15 @@ func _ready() -> void:
 	k_turn.key_id = "turn"
 	k_turn.fired.connect(_turn)
 	add_child(k_turn)
+	# 人體正上方：正面／背面切換（目前那一面會亮起來）
+	k_front = GazeKey.make("正面", 0.56, "front", 28)
+	k_front.key_id = "side:front"
+	k_front.fired.connect(func(): _set_side(false))
+	add_child(k_front)
+	k_back = GazeKey.make("背面", 0.56, "back", 28)
+	k_back.key_id = "side:back"
+	k_back.fired.connect(func(): _set_side(true))
+	add_child(k_back)
 	k_whole = GazeKey.make("全身", h, "body", 24)
 	k_whole.key_id = "whole"
 	k_whole.fired.connect(func(): _select("whole"))
@@ -113,11 +124,17 @@ func _layout() -> void:
 		var k: GazeKey = feel_keys[i]
 		k.position = Vector2((i % 2) * (fw + gap), (i / 2) * (fh + gap))
 		k.size = Vector2(fw, fh)
-	# 中：3D 人體
-	view.position = Vector2(lw + gap, 50)
-	view.size = Vector2(cw, size.y - 50)
-	lbl_part.position = Vector2(lw + gap, 0)
-	lbl_part.size = Vector2(cw, 46)
+	# 中：正面／背面切換鍵＋3D 人體
+	var th := clampf(size.y * 0.13, 64, 96)
+	var tw := (cw - gap) / 2
+	k_front.position = Vector2(lw + gap, 0)
+	k_front.size = Vector2(tw, th)
+	k_back.position = Vector2(lw + gap * 2 + tw, 0)
+	k_back.size = Vector2(tw, th)
+	lbl_part.position = Vector2(lw + gap, th + 4)
+	lbl_part.size = Vector2(cw, 44)
+	view.position = Vector2(lw + gap, th + 48)
+	view.size = Vector2(cw, size.y - th - 48)
 	lbl_l.position = Vector2(lw + gap + cw - 50, size.y * 0.42)
 	lbl_l.size = Vector2(46, 46)
 	lbl_r.position = Vector2(lw + gap + 4, size.y * 0.42)
@@ -141,6 +158,13 @@ func _refresh_labels() -> void:
 	for l in [lbl_part, lbl_l, lbl_r]:
 		l.add_theme_color_override("font_color", Pal.text())
 	# 正面時病人的左邊在畫面右邊
+	k_front.selected = not body.facing_back
+	k_back.selected = body.facing_back
+	# 目前顯示的那一面用綠色，另一面用藍色
+	k_front.color_override = Pal.ok() if not body.facing_back else Color(0, 0, 0, 0)
+	k_back.color_override = Pal.ok() if body.facing_back else Color(0, 0, 0, 0)
+	k_front.sub = "目前" if not body.facing_back else ""
+	k_back.sub = "目前" if body.facing_back else ""
 	lbl_l.text = "右" if body.facing_back else "左"
 	lbl_r.text = "左" if body.facing_back else "右"
 	if part != "":
@@ -154,7 +178,14 @@ func _refresh_labels() -> void:
 
 
 func _turn() -> void:
-	body.set_back(not body.facing_back)
+	_set_side(not body.facing_back)
+
+
+func _set_side(back: bool) -> void:
+	if back == body.facing_back:
+		return
+	Snd.play("page")
+	body.set_back(back)
 	k_turn.text = "轉到正面" if body.facing_back else "轉到背面"
 	_refresh_labels()
 
@@ -216,3 +247,5 @@ func _gui_input(e: InputEvent) -> void:
 			var id := body.pick(cam, local)
 			if id != "":
 				_select(id)
+			else:
+				_turn()          # 點人體旁邊的空白處：翻到另一面
