@@ -113,6 +113,7 @@ func start(from := 0, one := false) -> void:
 	if running:
 		return
 	running = true
+	mouse_filter = Control.MOUSE_FILTER_STOP     # 教學中點到別處不會誤按底下的按鍵
 	_abort = false
 	_one = one
 	visible = true
@@ -132,6 +133,7 @@ func stop() -> void:
 
 func _finish() -> void:
 	running = false
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	visible = false
 	App.demo = false
 	Gaze.bot_point = null
