@@ -21,7 +21,7 @@ static var _thread: Thread
 
 
 static func load_async() -> void:
-	if loaded or _thread:
+	if loaded or _thread or OS.has_feature("web"):
 		return
 	_thread = Thread.new()
 	_thread.start(_load)

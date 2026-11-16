@@ -23,23 +23,31 @@ func setup(m: Node) -> void:
 	name = "page_tools"
 
 
+const WEB_HIDE := ["vol_up", "vol_down", "mute", "desktop", "power_alarm", "fullscreen", "eyemouse", "quit"]
+
+
+func items() -> Array:
+	if OS.has_feature("web"):
+		return ITEMS.filter(func(it): return not WEB_HIDE.has(it[0]))
+	return ITEMS
+
+
 func _ready() -> void:
-	for it in ITEMS:
+	for it in items():
 		var k := GazeKey.make(it[1], 0.72, it[2], 26)
 		k.key_id = "tool:" + it[0]
 		var id: String = it[0]
 		k.fired.connect(func(): _do(id))
 		add_child(k)
 		keys[id] = k
-	keys["vol_up"].repeatable = true
-	keys["vol_down"].repeatable = true
-	for id in ["vol_up", "vol_down", "mute"]:
-		keys[id].hue = 0.56
-	for id in ["desktop", "rest"]:
-		keys[id].hue = 0.46
-	for id in ["tutorial", "eyemouse", "update", "about"]:
-		keys[id].hue = 0.30
-	keys["quit"].hue = 0.0
+	var hues := {"vol_up": 0.56, "vol_down": 0.56, "mute": 0.56, "desktop": 0.46, "rest": 0.46,
+		"tutorial": 0.30, "eyemouse": 0.30, "update": 0.30, "about": 0.30, "quit": 0.0}
+	for id in hues:
+		if keys.has(id):
+			keys[id].hue = hues[id]
+	for id in ["vol_up", "vol_down"]:
+		if keys.has(id):
+			keys[id].repeatable = true
 	App.settings_changed.connect(_refresh)
 	resized.connect(_layout)
 	_layout()
@@ -50,12 +58,12 @@ func _layout() -> void:
 	if size.x < 10:
 		return
 	var cols := 5
-	var rows := ceili(float(ITEMS.size()) / cols)
+	var rows := ceili(float(items().size()) / cols)
 	var gap := 10.0
 	var w := (size.x - gap * (cols - 1)) / cols
 	var h := (size.y - gap * (rows - 1)) / rows
 	var i := 0
-	for it in ITEMS:
+	for it in items():
 		var k: GazeKey = keys[it[0]]
 		k.position = Vector2((i % cols) * (w + gap), (i / cols) * (h + gap))
 		k.size = Vector2(w, h)
@@ -75,6 +83,17 @@ func _opt_name(list: Array, v) -> String:
 
 func _refresh() -> void:
 	var s := App.settings
+	if OS.has_feature("web"):
+		keys["update"].sub = "目前 " + App.APP_VERSION
+		keys["speed"].sub = "%s（%.1f 秒）" % [App.SPEEDS[int(s.speed)][0], App.dwell_s()]
+		keys["voice"].sub = "男聲" if str(s.voice) == "m" else "女聲"
+		keys["speak_on_select"].sub = onoff(s.speak_on_select)
+		keys["accumulate"].sub = onoff(s.accumulate)
+		keys["theme"].sub = _opt_name(App.THEMES, s.theme)
+		keys["alarm_sound"].sub = _opt_name(App.ALARMS, s.alarm_sound)
+		keys["show_cursor"].sub = onoff(s.show_cursor)
+		keys["app_volume"].sub = "%d%%" % int(round(float(s.volume) * 100))
+		return
 	keys["speed"].sub = "%s（%.1f 秒）" % [App.SPEEDS[int(s.speed)][0], App.dwell_s()]
 	keys["voice"].sub = "男聲" if str(s.voice) == "m" else "女聲"
 	keys["speak_on_select"].sub = onoff(s.speak_on_select)

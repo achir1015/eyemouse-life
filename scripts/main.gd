@@ -60,6 +60,8 @@ func _ready() -> void:
 		await _selftest()
 		return
 	await get_tree().process_frame
+	if OS.has_feature("web") and not App.test_mode:
+		await _web_start()
 	if _args.has("screen"):
 		await _test_screen(str(_args.screen))
 	elif not bool(App.settings.tutorial_done) and not App.test_mode:
@@ -165,7 +167,6 @@ func _build_ui() -> void:
 	msg_label.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
 	msg_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	msg_label.clip_text = true
-	msg_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	msg_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ui.add_child(msg_label)
 	status_label = Label.new()
@@ -355,9 +356,12 @@ func _on_message() -> void:
 func _fit_message() -> void:
 	var font := msg_label.get_theme_default_font()
 	var fs := 40
-	while fs > 18:
-		var sz := font.get_multiline_string_size(msg_label.text, HORIZONTAL_ALIGNMENT_LEFT, msg_label.size.x, fs)
-		if sz.y <= msg_label.size.y:
+	var w := maxf(40.0, msg_label.size.x - 8)
+	while fs > 16:
+		# 中文不一定能用字詞斷行，所以用「單行寬度 ÷ 可用寬度」估算行數
+		var one := font.get_string_size(msg_label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+		var lines := ceili(one / w)
+		if lines * fs * 1.35 <= msg_label.size.y:
 			break
 		fs -= 2
 	msg_label.add_theme_font_size_override("font_size", fs)
@@ -495,6 +499,26 @@ func _build_rest() -> Control:
 		App.set_paused(false))
 	ov.add_child(k)
 	return ov
+
+
+## 網頁版：瀏覽器規定要先點一下才能播放聲音
+func _web_start() -> void:
+	var ov := _overlay(Color(0.05, 0.08, 0.16, 0.97))
+	(ov.get_node("Title") as Label).text = Data.APP_NAME
+	var k := GazeKey.make("點一下開始", 0.36, "play", 44)
+	k.sub = "瀏覽器要先點一下才能播放聲音"
+	k.key_id = "web_start"
+	k.works_when_paused = true
+	k.use_real = true
+	k.color_override = Pal.ok()
+	ov.add_child(k)
+	ov.visible = true
+	ui.move_child(ov, cursor.get_index())
+	_layout_overlay(ov, ui.size)
+	GazeKey.modal = ov
+	await k.fired
+	GazeKey.modal = null
+	ov.queue_free()
 
 
 func _on_paused(p: bool) -> void:

@@ -128,10 +128,6 @@ func _gui_input(e: InputEvent) -> void:
 		if active() or (use_real and enabled):
 			_fire()
 			accept_event()
-	elif e is InputEventScreenTouch and e.pressed:
-		if active():
-			_fire()
-			accept_event()
 
 
 ## 教學：示範游標要看的位置

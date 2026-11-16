@@ -28,11 +28,13 @@ var _link_t := -10.0
 var _lost_flag := false
 var _focused := true
 var _launch_tried := false
+var touch_mode := false              # 手機／平板用手指點時：不做停留選取（點了就選）
 
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	set_process_input(true)
 	if OS.get_cmdline_user_args().has("--no-link") or OS.has_feature("web"):
 		return
 	_try_connect()
@@ -167,6 +169,13 @@ func view_size() -> Vector2:
 	return get_viewport().get_visible_rect().size
 
 
+func _input(e: InputEvent) -> void:
+	if e is InputEventScreenTouch:
+		touch_mode = true
+	elif e is InputEventMouseMotion and e.device != InputEvent.DEVICE_ID_EMULATION:
+		touch_mode = false
+
+
 # ---------------------------------------------------------------- 每格更新
 func _process(delta: float) -> void:
 	_poll_link(delta)
@@ -179,7 +188,7 @@ func _process(delta: float) -> void:
 	else:
 		source = "mouse"
 		real_point = get_viewport().get_mouse_position()
-		real_valid = _focused and not (App.test_mode and not OS.get_cmdline_user_args().has("--mouse"))
+		real_valid = _focused and not touch_mode and not (App.test_mode and not OS.get_cmdline_user_args().has("--mouse"))
 		if linked:   # 眼動鼠用「滑鼠模擬」來源時，連線傳來的就是滑鼠位置
 			source = "eyemouse"
 			if now - _link_t < 0.35:
@@ -194,6 +203,8 @@ func _process(delta: float) -> void:
 
 
 func status_text() -> String:
+	if OS.has_feature("web"):
+		return "線上版：用滑鼠停留、觸控，或電腦的眼控軟體操作"
 	if linked:
 		var src: String = {"tobii": "Tobii 眼動儀", "tobii_head": "Tobii 頭控", "webcam": "攝影機眼控", "webcam_head": "攝影機頭控",
 			"mouse": "滑鼠模擬"}.get(eyemouse_source, eyemouse_source)

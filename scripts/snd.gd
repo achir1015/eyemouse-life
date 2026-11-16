@@ -35,8 +35,6 @@ func _ready() -> void:
 
 
 func _pick_tts_voice() -> void:
-	if OS.has_feature("web"):
-		return
 	var best := ""
 	for v in DisplayServer.tts_get_voices():
 		var lang := str(v.get("language", ""))
@@ -96,9 +94,14 @@ func speak(text: String) -> void:
 
 
 func _tts(text: String) -> void:
-	if OS.has_feature("web") or _tts_voice == "":
-		last_engine = "none"
-		return
+	if _tts_voice == "":
+		_pick_tts_voice()          # 瀏覽器的語音清單是稍後才載入的
+	if _tts_voice == "":
+		var all := DisplayServer.tts_get_voices()
+		if all.is_empty():
+			last_engine = "none"
+			return
+		_tts_voice = str(all[0].id)
 	last_engine = "tts"
 	var rate := clampf(float(App.settings.tts_rate), 0.5, 2.0)
 	DisplayServer.tts_speak(text.replace("\n", "，"), _tts_voice, int(vol() * 100), 1.0, rate, 0, true)
@@ -141,13 +144,13 @@ func _next() -> void:
 func stop_speaking() -> void:
 	_queue.clear()
 	voice.stop()
-	if not OS.has_feature("web") and DisplayServer.tts_is_speaking():
+	if DisplayServer.tts_is_speaking():
 		DisplayServer.tts_stop()
 	_set_speaking(false)
 
 
 func is_speaking() -> bool:
-	return voice.playing or (_speaking and not OS.has_feature("web") and DisplayServer.tts_is_speaking())
+	return voice.playing or (_speaking and DisplayServer.tts_is_speaking())
 
 
 func _set_speaking(v: bool) -> void:
@@ -180,7 +183,7 @@ func stop_alarm() -> void:
 
 
 func _process(delta: float) -> void:
-	if _speaking and not voice.playing and not OS.has_feature("web") and not DisplayServer.tts_is_speaking():
+	if _speaking and not voice.playing and not DisplayServer.tts_is_speaking():
 		_set_speaking(false)
 	if alarming != "":
 		if not alarm_player.playing:
