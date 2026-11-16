@@ -31,6 +31,7 @@ jobs:
         run: |
           mkdir -p _site
           cp -R docs/. _site/
+          rm -f _site/.gdignore
           if gh release download --repo "${{ github.repository }}" --pattern EyeMouseLife-web.zip --dir /tmp; then
             mkdir -p _site/online
             unzip -q /tmp/EyeMouseLife-web.zip -d _site/online
