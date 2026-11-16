@@ -1,1 +1,1 @@
-{"version": "1.0.4", "notes": "新增 iPhone／iPad 版（橫放、觸控；iPad 可搭配內建眼動追蹤）；觸控螢幕一開始就用觸控模式，避免誤觸求助鈕；說話列提示文字不再被切到。"}
+{"version": "1.0.5", "notes": "新增 Android 版（手機、平板橫放觸控）；六個平台到齊：Windows、macOS、iPhone／iPad、Android、線上版。"}
