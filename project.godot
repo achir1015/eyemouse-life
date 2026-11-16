@@ -1,0 +1,49 @@
+; Engine configuration file.
+; 眼動鼠生活日常工具
+
+config_version=5
+
+[application]
+
+config/name="眼動鼠生活日常工具"
+config/description="給漸凍人與上肢不便朋友的 3D 眼控生活工具：用眼睛說話、求助、表達身體感覺、注音打字、使用電腦"
+config/version="1.0.0"
+run/main_scene="res://scenes/main.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+config/icon="res://icon.svg"
+boot_splash/bg_color=Color(0.086, 0.141, 0.247, 1)
+boot_splash/show_image=false
+config/quit_on_go_back=false
+config/windows_native_icon="res://platform/icon.ico"
+run/low_processor_mode=false
+
+[audio]
+
+general/text_to_speech=true
+
+[autoload]
+
+App="*res://scripts/app.gd"
+Gaze="*res://scripts/gaze.gd"
+Snd="*res://scripts/snd.gd"
+Sys="*res://scripts/sys.gd"
+Updater="*res://scripts/updater.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/mode=2
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[gui]
+
+theme/custom_font="res://assets/fonts/ui_font.tres"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true
+anti_aliasing/quality/msaa_3d=2

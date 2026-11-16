@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>眼動鼠生活日常工具</title>
+<link rel="icon" href="icon.png">
+<style>
+  :root { --bg:#16243F; --card:#1f3157; --text:#EAF2FF; --dim:#9DB2D6; --accent:#FFC53D; --ok:#2FB380; }
+  body { margin:0; font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
+  main { max-width:920px; margin:0 auto; padding:32px 16px 64px; }
+  header { display:flex; gap:20px; align-items:center; }
+  header img { width:112px; height:112px; }
+  h1 { margin:0; font-size:2rem; }
+  .lead { color:var(--dim); margin:4px 0 0; }
+  .btns { display:flex; flex-wrap:wrap; gap:12px; margin:28px 0; }
+  .btn { display:inline-block; padding:14px 22px; border-radius:14px; background:var(--ok); color:#fff; text-decoration:none; font-weight:700; font-size:1.1rem; }
+  .btn.alt { background:#3B6FD8; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; }
+  .card { background:var(--card); border-radius:16px; padding:16px 18px; }
+  .card b { color:var(--accent); }
+  footer { margin-top:40px; color:var(--dim); font-size:.9rem; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="icon.png" alt="">
+    <div>
+      <h1>眼動鼠生活日常工具</h1>
+      <p class="lead">給漸凍人（ALS）與上肢不便的朋友：用眼睛說話、求助、表達身體感覺、注音打字、使用電腦。</p>
+    </div>
+  </header>
+  <div class="btns">
+    <a class="btn" href="https://github.com/achir1015/eyemouse-life/releases/latest/download/EyeMouseLife-Setup.exe">下載 Windows 安裝程式</a>
+    <a class="btn alt" href="https://github.com/achir1015/eyemouse-life/releases/latest/download/EyeMouseLife-Windows-portable.zip">免安裝版（zip）</a>
+    <a class="btn alt" href="https://github.com/achir1015/eyemouse-life/releases">所有版本</a>
+  </div>
+  <div class="grid">
+    <div class="card"><b>看著就選</b><br>按鍵像立體鍵帽，看著會浮起、填滿後按下；看別處就取消。選過要先移開視線才能再選，避免重複。</div>
+    <div class="card"><b>快速回答與緊急照護</b><br>是／不是／等一下最大顆；抽痰、呼吸器、呼吸困難一看就說。</div>
+    <div class="card"><b>3D 身體感覺</b><br>看著 3D 人體不舒服的部位，再選痛、癢、麻，說出「我的左肩膀有點痛」。</div>
+    <div class="card"><b>眼控注音打字</b><br>不用選聲調、自動分字、詞語候選與聯想，打字看的次數更少。</div>
+    <div class="card"><b>求助與斷電警報</b><br>求助鈕發出警報；筆電被拔掉電源時自動警報，提醒檢查呼吸器電源。</div>
+    <div class="card"><b>暫停與休息</b><br>暫停後只有看著「繼續」三秒才恢復；休息黑畫面讓眼睛放鬆。</div>
+    <div class="card"><b>自然語音</b><br>內建句子預錄女聲／男聲；自己新增的句子用電腦語音朗讀。</div>
+    <div class="card"><b>語音動態教學</b><br>眼動鼠一邊說明、一邊用示範游標實際操作給你看。</div>
+  </div>
+  <p>搭配 <a style="color:var(--accent)" href="https://github.com/achir1015/eyemouse">眼動鼠</a>（Tobii 眼動儀或攝影機）使用效果最好；沒有眼動鼠時也可以用滑鼠或其他眼控軟體。</p>
+  <footer>系統開發：吳玉柱 先生 與 Claude AI Opus 5.5 ・ 注音詞庫：McBopomofo 小麥注音（MIT 授權）</footer>
+</main>
+</body>
+</html>
