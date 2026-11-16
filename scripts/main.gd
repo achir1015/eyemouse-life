@@ -344,7 +344,7 @@ func _update_status() -> void:
 
 func _on_message() -> void:
 	if App.message == "":
-		msg_label.text = "看著下面的句子，就會顯示在這裡並念出來"
+		msg_label.text = "看著下面的句子，就會說出來"
 		msg_label.add_theme_color_override("font_color", Pal.text_dim())
 	else:
 		msg_label.text = App.message

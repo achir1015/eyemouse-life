@@ -6,7 +6,7 @@ signal phrases_changed(cat: String)
 signal message_changed
 signal paused_changed(paused: bool)
 
-const APP_VERSION := "1.0.1"
+const APP_VERSION := "1.0.2"
 const SPEEDS := [["較慢", 1.6], ["慢", 1.25], ["正常", 1.0], ["快", 0.8], ["較快", 0.6]]
 const THEMES := [["night", "夜空藍"], ["warm", "暖陽米"], ["contrast", "高對比"]]
 const ALARMS := [["siren", "警笛"], ["bell", "鈴聲"], ["beep", "嗶嗶聲"]]

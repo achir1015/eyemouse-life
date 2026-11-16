@@ -30,6 +30,7 @@ python -I tools/gen_icons.py       # 介面圖示
 python -I tools/gen_sfx.py         # 音效與警報聲
 python -I tools/gen_voice.py       # 預錄語音（只重做有變動的）
 bash tools/build_win.sh            # Windows 安裝程式＋免安裝 zip → ../build/release
+bash platform/macos/build-dmg.sh   # 在 Mac 上（專案放 ~/Developer/eyemouse-life）→ ~/Developer/eyemouse-life-build/EyeMouseLife-macOS.dmg
 ```
 
 測試：`Godot --path . -- --test --no-link --selftest --out=結果.txt`；截圖 `-- --test --no-link --screen=body:shoulder_l --shot=畫面.png`。

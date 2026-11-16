@@ -108,7 +108,7 @@ func _build() -> void:
 		_deco(Vector3(sx * 0.048, 1.644, 0.127), Vector3(0.027, 0.029, 0.01), Color("#3A2618"))
 		_deco(Vector3(sx * 0.048, 1.644, 0.1315), Vector3(0.012, 0.013, 0.005), Color("#0B0705"))
 		_deco(Vector3(sx * 0.048 - 0.006, 1.651, 0.1335), Vector3(0.007, 0.007, 0.004), Color.WHITE, true)
-		_deco(Vector3(sx * 0.05, 1.677, 0.108), Vector3(0.064, 0.011, 0.014), Color("#4A3226"), false, sx * -0.12)
+		_deco(Vector3(sx * 0.05, 1.677, 0.108), Vector3(0.064, 0.011, 0.014), Color("#4A3226"), false, sx * 0.05)
 		_deco(Vector3(sx * 0.011, 1.582, 0.144), Vector3(0.011, 0.007, 0.006), Color("#7A4A3A"))
 	_add("sphere", "nose", "back_head", Vector3(0, 1.603, 0.127), Vector3(0.042, 0.062, 0.052))
 	_add("sphere", "mouth", "back_head", Vector3(0, 1.556, 0.112), Vector3(0.078, 0.034, 0.042))
