@@ -356,7 +356,7 @@ func _on_message() -> void:
 func _fit_message() -> void:
 	var font := msg_label.get_theme_default_font()
 	var fs := 40
-	var w := maxf(40.0, msg_label.size.x - 8)
+	var w := maxf(40.0, msg_label.size.x - 36)   # 留邊，避免最後一兩個字被切掉
 	while fs > 16:
 		# 中文不一定能用字詞斷行，所以用「單行寬度 ÷ 可用寬度」估算行數
 		var one := font.get_string_size(msg_label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
