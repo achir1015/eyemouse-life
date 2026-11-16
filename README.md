@@ -1,4 +1,11 @@
 # 眼動鼠生活日常工具
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/868ac246-69cd-4096-a686-4a19da366ae2" />
+示範
+
+https://github.com/user-attachments/assets/656db740-2e84-4200-b7c7-a40ef5de0c08
+
+
+
 
 給漸凍人（ALS）與上肢不便朋友的 **3D 眼控生活工具**（Godot 4.7）：用眼睛說話、求助、表達身體感覺、注音打字、使用電腦。
 
