@@ -35,7 +35,9 @@ var touch_mode := false              # 手機／平板用手指點時：不做�
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	set_process_input(true)
-	if OS.get_cmdline_user_args().has("--no-link") or OS.has_feature("web"):
+	# 手機、平板、觸控螢幕：一開始就當觸控模式，避免滑鼠預設位置（左上角）誤觸求助鈕
+	touch_mode = OS.has_feature("mobile") or (OS.has_feature("web") and DisplayServer.is_touchscreen_available())
+	if OS.get_cmdline_user_args().has("--no-link") or OS.has_feature("web") or OS.has_feature("mobile"):
 		return
 	_try_connect()
 
@@ -203,6 +205,8 @@ func _process(delta: float) -> void:
 
 
 func status_text() -> String:
+	if OS.has_feature("mobile"):
+		return "觸控操作；iPad 可用「輔助使用 › 眼動追蹤」看著停留"
 	if OS.has_feature("web"):
 		return "線上版：用滑鼠停留、觸控，或電腦的眼控軟體操作"
 	if linked:

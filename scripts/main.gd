@@ -234,7 +234,23 @@ func _build_ui() -> void:
 	ui.add_child(cursor)
 
 
+func _apply_safe_area() -> void:
+	if not OS.has_feature("mobile"):
+		return
+	var win := Vector2(DisplayServer.window_get_size())
+	var safe := Rect2(DisplayServer.get_display_safe_area())
+	var vp := get_viewport().get_visible_rect().size
+	if win.x < 10 or safe.size.x < 10:
+		return
+	var k := vp / win
+	ui.offset_left = safe.position.x * k.x
+	ui.offset_top = safe.position.y * k.y
+	ui.offset_right = -(win.x - safe.end.x) * k.x
+	ui.offset_bottom = -(win.y - safe.end.y) * k.y
+
+
 func _layout() -> void:
+	_apply_safe_area()
 	var vs := ui.size
 	if vs.x < 10:
 		vs = get_viewport().get_visible_rect().size

@@ -27,7 +27,7 @@ const WEB_HIDE := ["vol_up", "vol_down", "mute", "desktop", "power_alarm", "full
 
 
 func items() -> Array:
-	if OS.has_feature("web"):
+	if OS.has_feature("web") or OS.has_feature("mobile"):
 		return ITEMS.filter(func(it): return not WEB_HIDE.has(it[0]))
 	return ITEMS
 
@@ -83,7 +83,7 @@ func _opt_name(list: Array, v) -> String:
 
 func _refresh() -> void:
 	var s := App.settings
-	if OS.has_feature("web"):
+	if OS.has_feature("web") or OS.has_feature("mobile"):
 		keys["update"].sub = "目前 " + App.APP_VERSION
 		keys["speed"].sub = "%s（%.1f 秒）" % [App.SPEEDS[int(s.speed)][0], App.dwell_s()]
 		keys["voice"].sub = "男聲" if str(s.voice) == "m" else "女聲"
