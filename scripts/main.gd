@@ -548,6 +548,8 @@ func _on_power(on_ac: bool) -> void:
 ## buttons: [[文字, 色相, Callable], ...]
 func show_dialog(title: String, body: String, buttons: Array) -> void:
 	close_dialog()
+	_toast_t = 0.0
+	toast.visible = false
 	dialog = Control.new()
 	dialog.mouse_filter = Control.MOUSE_FILTER_STOP
 	var dim := ColorRect.new()
@@ -739,6 +741,10 @@ func _test_screen(s: String) -> void:
 			show_rest()
 		"about":
 			show_about()
+		"update":
+			check_update(true)
+			var res = await Updater.checked
+			print("UPDATE has=", res[0], " latest=", res[1], " current=", Updater.current_version())
 		"quit":
 			confirm_quit()
 		"editor":
